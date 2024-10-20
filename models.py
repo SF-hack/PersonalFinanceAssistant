@@ -3,7 +3,7 @@ from typing import Optional
 from datetime import date
 
 class User(BaseModel):
-    id: Optional[int]
+    id: Optional[int] = None  # Default to None
     username: str
 
 class Expense(BaseModel):
