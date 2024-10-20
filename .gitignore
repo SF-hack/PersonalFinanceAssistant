@@ -1,0 +1,29 @@
+# Python Bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual Environment
+venv/
+.env
+
+# MySQL Database Files
+*.sql
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Logs
+logs/
+*.log
+
+# Pytest Cache
+.pytest_cache/
+
+# IDE specific files (you can modify according to your IDE)
+.idea/
+.vscode/
+*.swp
+
+# Other files
+*.DS_Store  # macOS
+
