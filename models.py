@@ -16,7 +16,7 @@ class Expense(BaseModel):
 class Budget(BaseModel):
     user_id: int
     category: str
-    limit: float
+    limits: float
 
 class Investment(BaseModel):
     user_id: int
