@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from models import User, Expense, Budget, Investment
+from models import User, Expense, Budget, Investment, UserInsightsRequest
 from database import get_connection
+from financial_agent import FinancialAgent
 
 app = FastAPI()
 
@@ -94,5 +95,45 @@ async def check_budget(user_id: int):
     cursor.close()
     conn.close()
     return {"user_id": user_id, "budgets": budget_status}
+
+@app.get("/get-expenses/{user_id}", response_model=dict)
+async def get_expenses(user_id: int):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT category, amount, date FROM expenses WHERE user_id = %s", (user_id,))
+    expenses = cursor.fetchall()
+
+    cursor.close()
+    conn.close()
+
+    expense_list = [{"category": row[0], "amount": row[1], "date": row[2]} for row in expenses]
+    return {"user_id": user_id, "expenses": expense_list}
+
+@app.post("/financial-insights/")
+async def financial_insights(request: UserInsightsRequest):
+    user_id = request.user_id
+    # Fetch user expenses and budget limits from the database
+    conn = get_connection()
+    cursor = conn.cursor()
+    
+    cursor.execute("SELECT category, amount FROM expenses WHERE user_id = %s", (user_id,))
+    expenses = cursor.fetchall()
+    
+    user_expenses = [{"category": row[0], "amount": row[1]} for row in expenses]
+    
+    cursor.execute("SELECT category, limits FROM budgets WHERE user_id = %s", (user_id,))
+    budget_limits = cursor.fetchall()
+    user_budget_limits = {row[0]: row[1] for row in budget_limits}
+
+    # Initialize and use the Uagent
+    agent = FinancialAgent(user_id, user_budget_limits)
+    insights = agent.analyze_data(user_expenses)
+
+    cursor.close()
+    conn.close()
+    
+    return insights
+
 
 

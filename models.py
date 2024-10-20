@@ -22,3 +22,6 @@ class Investment(BaseModel):
     user_id: int
     advice: str
     date: date
+
+class UserInsightsRequest(BaseModel):
+    user_id: int
